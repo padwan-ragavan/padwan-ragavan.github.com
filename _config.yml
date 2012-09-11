@@ -3,9 +3,9 @@
 # ----------------------- #
 
 url: http://padwan-ragavan.github.com
-title: My Octopress Blog
-subtitle: A blogging framework for hackers.
-author: Your Name
+title: gitblog
+subtitle: daily logs in git
+author: Ragavan Govindarajan
 simple_search: http://google.com/search
 description:
 
