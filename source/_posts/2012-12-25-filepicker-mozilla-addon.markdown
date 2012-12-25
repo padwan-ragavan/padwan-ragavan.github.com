@@ -11,5 +11,38 @@ If your develpoing a mozilla addon, and want a file picker you can use the fileP
 
 
 {% codeblock filePicker lang:js https://github.com/padwan-ragavan/omnisequences/blob/master/lib/filePicker.js filePicker.js %}
-{% github padwan-ragavan/omnisequences aa1772564eee5ae8b93f7e7fead0a5fe34987881 %}
+const {Cc,Ci} = require("chrome");
+const windowUtils = require("window-utils");
+
+var getExportFileName = function() {
+    var filePicker = Cc['@mozilla.org/filepicker;1']
+        .createInstance(Ci.nsIFilePicker);
+    filePicker.init(windowUtils.activeBrowserWindow, "Export Omnisequences", Ci.nsIFilePicker.modeSave);
+    filePicker.appendFilter("*.json", "*.json");
+    var show = filePicker.show();
+    if(show != Ci.nsIFilePicker.returnCancel) {
+        var fileName = filePicker.file.persistentDescriptor;
+        if(/.json$/.test(fileName)) {
+            return fileName;
+        } else {
+            return fileName + ".json";
+        }
+    }
+    return null;
+};
+
+var getImportFileName = function() {
+    var filePicker = Cc['@mozilla.org/filepicker;1']
+        .createInstance(Ci.nsIFilePicker);
+    filePicker.init(windowUtils.activeBrowserWindow, "Export Omnisequences", Ci.nsIFilePicker.modeOpen);
+    filePicker.appendFilter("*.json", "*.json");
+    var show = filePicker.show();
+    if(show != Ci.nsIFilePicker.returnCancel) {
+        return filePicker.file.persistentDescriptor;
+    }
+    return null;
+};
+
+exports.getExportFileName = getExportFileName;
+exports.getImportFileName = getImportFileName;
 {% endcodeblock %}
