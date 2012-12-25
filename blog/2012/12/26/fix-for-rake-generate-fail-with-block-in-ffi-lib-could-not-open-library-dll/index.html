@@ -5,11 +5,12 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>Category: addon - gitblog</title>
+  <title>fix for rake generate with sytax highlight code block - fail with block in ffi_lib: Could not open library .dll - gitblog</title>
   <meta name="author" content="Ragavan Govindarajan">
 
   
-  <meta name="description" content="Category: addon">
+  <meta name="description" content="When rake generate fails with 1
+block in ffi_lib: Could not open library .dll for me it was because the rubypython was looking for python27.dll in { &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -18,7 +19,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://padwan-ragavan.github.comblog/categories/addon/">
+  <link rel="canonical" href="http://padwan-ragavan.github.com/blog/2012/12/26/fix-for-rake-generate-fail-with-block-in-ffi-lib-could-not-open-library-dll/">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <script src="/javascripts/modernizr-2.0.js"></script>
@@ -63,35 +64,88 @@
   <div id="main">
     <div id="content">
       <div>
-<article role="article">
+<article class="hentry" role="article">
   
   <header>
-    <h1 class="entry-title">Category: Addon</h1>
+    
+      <h1 class="entry-title">Fix for Rake Generate With Sytax Highlight Code Block - Fail With Block in Ffi_lib: Could Not Open Library .dll</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-12-26T01:17:00+05:30" pubdate data-updated="true">Dec 26<span>th</span>, 2012</time>
+        
+      </p>
     
   </header>
-  
-  <div id="blog-archives" class="category">
 
 
+<div class="entry-content"><p>When <code>rake generate</code> fails with</p>
 
-  
-  <h2>2012</h2>
-
-<article>
-  
-<h1><a href="/blog/2012/12/25/filepicker-mozilla-addon/">filepicker for mozilla addon</a></h1>
-<time datetime="2012-12-25T23:06:00+05:30" pubdate><span class='month'>Dec</span> <span class='day'>25</span> <span class='year'>2012</span></time>
-
-<footer>
-  <span class="categories">posted in <a class='category' href='/blog/categories/addon/'>addon</a>, <a class='category' href='/blog/categories/mozilla/'>mozilla</a></span>
-</footer>
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>block in ffi_lib: Could not open library .dll</span></code></pre></td></tr></table></div></figure>
 
 
-</article>
+<p></p>
 
+<p>for me it was because the rubypython was looking for python27.dll in <code>{instal.dir}\Python27\libs\python27.dll</code> and it was not there. This can be fixed by copying the <code>python27.dll</code> from <code>C:\Windows\System32\python27.dll</code> if yours is a 32-bit or from <code>C:\Windows\SysWOW64\python27.dll</code> if 64-bit.</p>
+
+<p>got to know about the missing dll from <a href="http://hussion.me/blog/2012/04/29/octopress2/">Hussion&#8217;s Blog</a>, but mine was 64-bit and ofcourse copying from system32 didnt solve the issue.</p>
 </div>
 
+
+  <footer>
+    <p class="meta">
+      
   
+
+<span class="byline author vcard">Posted by <span class="fn">Ragavan Govindarajan</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-12-26T01:17:00+05:30" pubdate data-updated="true">Dec 26<span>th</span>, 2012</time>
+      
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://padwan-ragavan.github.com/blog/2012/12/26/fix-for-rake-generate-fail-with-block-in-ffi-lib-could-not-open-library-dll/" data-via="" data-counturl="http://padwan-ragavan.github.com/blog/2012/12/26/fix-for-rake-generate-fail-with-block-in-ffi-lib-could-not-open-library-dll/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2012/12/25/filepicker-mozilla-addon/" title="Previous Post: filepicker for mozilla addon">&laquo; filepicker for mozilla addon</a>
+      
+      
+    </p>
+  </footer>
 </article>
 
 </div>

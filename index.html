@@ -9,7 +9,8 @@
   <meta name="author" content="Ragavan Govindarajan">
 
   
-  <meta name="description" content="If your develpoing a mozilla addon, and want a file picker you can use the filePicker module. It uses component interface. You can find more info &hellip;">
+  <meta name="description" content="When rake generate fails with 1
+block in ffi_lib: Could not open library .dll for me it was because the rubypython was looking for python27.dll in { &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -70,6 +71,52 @@
       
   <header>
     
+      <h1 class="entry-title"><a href="/blog/2012/12/26/fix-for-rake-generate-fail-with-block-in-ffi-lib-could-not-open-library-dll/">Fix for Rake Generate With Sytax Highlight Code Block - Fail With Block in Ffi_lib: Could Not Open Library .dll</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-12-26T01:17:00+05:30" pubdate data-updated="true">Dec 26<span>th</span>, 2012</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>When <code>rake generate</code> fails with</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>block in ffi_lib: Could not open library .dll</span></code></pre></td></tr></table></div></figure>
+
+
+<p></p>
+
+<p>for me it was because the rubypython was looking for python27.dll in <code>{instal.dir}\Python27\libs\python27.dll</code> and it was not there. This can be fixed by copying the <code>python27.dll</code> from <code>C:\Windows\System32\python27.dll</code> if yours is a 32-bit or from <code>C:\Windows\SysWOW64\python27.dll</code> if 64-bit.</p>
+
+<p>got to know about the missing dll from <a href="http://hussion.me/blog/2012/04/29/octopress2/">Hussion&#8217;s Blog</a>, but mine was 64-bit and ofcourse copying from system32 didnt solve the issue.</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
       <h1 class="entry-title"><a href="/blog/2012/12/25/filepicker-mozilla-addon/">Filepicker for Mozilla Addon</a></h1>
     
     
@@ -97,7 +144,73 @@
 <a href="https://developer.mozilla.org/en-US/docs/XPCOM_Interface_Reference/nsIFilePicker">nsIFilePicker</a>.</p>
 
 <figure class='code'><figcaption><span>filePicker </span><a href='https://github.com/padwan-ragavan/omnisequences/blob/master/lib/filePicker.js'>filePicker.js </a></figcaption> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="nx">Liquid</span> <span class="nx">error</span><span class="o">:</span> <span class="nx">GET</span> <span class="nx">https</span><span class="o">:</span><span class="c1">//api.github.com/repos/padwan-ragavan/omnisequences/git/blobs/aa1772564eee5ae8b93f7e7fead0a5fe34987881: 403: API Rate Limit Exceeded for 122.176.120.192</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="kr">const</span> <span class="p">{</span><span class="nx">Cc</span><span class="p">,</span><span class="nx">Ci</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s2">&quot;chrome&quot;</span><span class="p">);</span>
+</span><span class='line'><span class="kr">const</span> <span class="nx">windowUtils</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s2">&quot;window-utils&quot;</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">var</span> <span class="nx">getExportFileName</span> <span class="o">=</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>    <span class="kd">var</span> <span class="nx">filePicker</span> <span class="o">=</span> <span class="nx">Cc</span><span class="p">[</span><span class="s1">&#39;@mozilla.org/filepicker;1&#39;</span><span class="p">]</span>
+</span><span class='line'>        <span class="p">.</span><span class="nx">createInstance</span><span class="p">(</span><span class="nx">Ci</span><span class="p">.</span><span class="nx">nsIFilePicker</span><span class="p">);</span>
+</span><span class='line'>    <span class="nx">filePicker</span><span class="p">.</span><span class="nx">init</span><span class="p">(</span><span class="nx">windowUtils</span><span class="p">.</span><span class="nx">activeBrowserWindow</span><span class="p">,</span> <span class="s2">&quot;Export Omnisequences&quot;</span><span class="p">,</span> <span class="nx">Ci</span><span class="p">.</span><span class="nx">nsIFilePicker</span><span class="p">.</span><span class="nx">modeSave</span><span class="p">);</span>
+</span><span class='line'>    <span class="nx">filePicker</span><span class="p">.</span><span class="nx">appendFilter</span><span class="p">(</span><span class="s2">&quot;*.json&quot;</span><span class="p">,</span> <span class="s2">&quot;*.json&quot;</span><span class="p">);</span>
+</span><span class='line'>    <span class="kd">var</span> <span class="nx">show</span> <span class="o">=</span> <span class="nx">filePicker</span><span class="p">.</span><span class="nx">show</span><span class="p">();</span>
+</span><span class='line'>    <span class="k">if</span><span class="p">(</span><span class="nx">show</span> <span class="o">!=</span> <span class="nx">Ci</span><span class="p">.</span><span class="nx">nsIFilePicker</span><span class="p">.</span><span class="nx">returnCancel</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>        <span class="kd">var</span> <span class="nx">fileName</span> <span class="o">=</span> <span class="nx">filePicker</span><span class="p">.</span><span class="nx">file</span><span class="p">.</span><span class="nx">persistentDescriptor</span><span class="p">;</span>
+</span><span class='line'>        <span class="k">if</span><span class="p">(</span><span class="sr">/.json$/</span><span class="p">.</span><span class="nx">test</span><span class="p">(</span><span class="nx">fileName</span><span class="p">))</span> <span class="p">{</span>
+</span><span class='line'>            <span class="k">return</span> <span class="nx">fileName</span><span class="p">;</span>
+</span><span class='line'>        <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+</span><span class='line'>            <span class="k">return</span> <span class="nx">fileName</span> <span class="o">+</span> <span class="s2">&quot;.json&quot;</span><span class="p">;</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>    <span class="k">return</span> <span class="kc">null</span><span class="p">;</span>
+</span><span class='line'><span class="p">};</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">var</span> <span class="nx">getImportFileName</span> <span class="o">=</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>    <span class="kd">var</span> <span class="nx">filePicker</span> <span class="o">=</span> <span class="nx">Cc</span><span class="p">[</span><span class="s1">&#39;@mozilla.org/filepicker;1&#39;</span><span class="p">]</span>
+</span><span class='line'>        <span class="p">.</span><span class="nx">createInstance</span><span class="p">(</span><span class="nx">Ci</span><span class="p">.</span><span class="nx">nsIFilePicker</span><span class="p">);</span>
+</span><span class='line'>    <span class="nx">filePicker</span><span class="p">.</span><span class="nx">init</span><span class="p">(</span><span class="nx">windowUtils</span><span class="p">.</span><span class="nx">activeBrowserWindow</span><span class="p">,</span> <span class="s2">&quot;Export Omnisequences&quot;</span><span class="p">,</span> <span class="nx">Ci</span><span class="p">.</span><span class="nx">nsIFilePicker</span><span class="p">.</span><span class="nx">modeOpen</span><span class="p">);</span>
+</span><span class='line'>    <span class="nx">filePicker</span><span class="p">.</span><span class="nx">appendFilter</span><span class="p">(</span><span class="s2">&quot;*.json&quot;</span><span class="p">,</span> <span class="s2">&quot;*.json&quot;</span><span class="p">);</span>
+</span><span class='line'>    <span class="kd">var</span> <span class="nx">show</span> <span class="o">=</span> <span class="nx">filePicker</span><span class="p">.</span><span class="nx">show</span><span class="p">();</span>
+</span><span class='line'>    <span class="k">if</span><span class="p">(</span><span class="nx">show</span> <span class="o">!=</span> <span class="nx">Ci</span><span class="p">.</span><span class="nx">nsIFilePicker</span><span class="p">.</span><span class="nx">returnCancel</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>        <span class="k">return</span> <span class="nx">filePicker</span><span class="p">.</span><span class="nx">file</span><span class="p">.</span><span class="nx">persistentDescriptor</span><span class="p">;</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>    <span class="k">return</span> <span class="kc">null</span><span class="p">;</span>
+</span><span class='line'><span class="p">};</span>
+</span><span class='line'>
+</span><span class='line'><span class="nx">exports</span><span class="p">.</span><span class="nx">getExportFileName</span> <span class="o">=</span> <span class="nx">getExportFileName</span><span class="p">;</span>
+</span><span class='line'><span class="nx">exports</span><span class="p">.</span><span class="nx">getImportFileName</span> <span class="o">=</span> <span class="nx">getImportFileName</span><span class="p">;</span>
 </span></code></pre></td></tr></table></div></figure>
 
 </div>
@@ -118,6 +231,10 @@
     <section>
   <h1>Recent Posts</h1>
   <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2012/12/26/fix-for-rake-generate-fail-with-block-in-ffi-lib-could-not-open-library-dll/">fix for rake generate with sytax highlight code block - fail with block in ffi_lib: Could not open library .dll</a>
+      </li>
     
       <li class="post">
         <a href="/blog/2012/12/25/filepicker-mozilla-addon/">filepicker for mozilla addon</a>
