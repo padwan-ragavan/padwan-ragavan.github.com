@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom">
 
-  <title><![CDATA[gitblog]]></title>
-  <link href="http://padwan-ragavan.github.com/atom.xml" rel="self"/>
+  <title><![CDATA[Category: addon | gitblog]]></title>
+  <link href="http://padwan-ragavan.github.com/blog/categories/addon/atom.xml" rel="self"/>
   <link href="http://padwan-ragavan.github.com/"/>
   <updated>2012-12-26T01:13:04+05:30</updated>
   <id>http://padwan-ragavan.github.com/</id>
@@ -21,10 +21,9 @@
     <content type="html"><![CDATA[<p>If your develpoing a mozilla addon, and want a file picker you can use the filePicker module. It uses component interface. You can find more info
 <a href="https://developer.mozilla.org/en-US/docs/XPCOM_Interface_Reference/nsIFilePicker">nsIFilePicker</a>.</p>
 
-<figure class='code'><figcaption><span>filePicker </span><a href='https://github.com/padwan-ragavan/omnisequences/blob/master/lib/filePicker.js'>filePicker.js </a></figcaption> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<p><div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>filePicker </span><a href='https://github.com/padwan-ragavan/omnisequences/blob/master/lib/filePicker.js'>filePicker.js </a></figcaption> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 </pre></td><td class='code'><pre><code class='js'><span class='line'><span class="nx">Liquid</span> <span class="nx">error</span><span class="o">:</span> <span class="nx">GET</span> <span class="nx">https</span><span class="o">:</span><span class="c1">//api.github.com/repos/padwan-ragavan/omnisequences/git/blobs/aa1772564eee5ae8b93f7e7fead0a5fe34987881: 403: API Rate Limit Exceeded for 122.176.120.192</span>
-</span></code></pre></td></tr></table></div></figure>
-
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
 ]]></content>
   </entry>
   
