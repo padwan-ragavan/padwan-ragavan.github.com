@@ -9,21 +9,13 @@
   <meta name="author" content="Ragavan Govindarajan">
 
   
-  <meta name="description" content="css_at_the_end 1
+  <meta name="description" content="If we have a domain like Item below, 1
 2
 3
 4
 5
 6
-7
-8
-9
-10
-11
-&lt;html&gt;
-&lt;head&gt;&lt;title&gt;css at the end&lt;/title&gt; &lt;/head&gt;
-&lt;body&gt;
-&lt;div class=& &hellip;">
+7 public class Item { public virtual int Id { get; set; } public virtual string Source { get; set &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -78,6 +70,177 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2013/05/31/linq-to-sql-for-custom-methods-LinqExtensionMethods/">Linq to Sql for Custom Methods/Properties - LinqExtensionMethods</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-05-31T20:47:00+05:30" pubdate data-updated="true">May 31<span>st</span>, 2013</time>
+        
+         | <a href="/blog/2013/05/31/linq-to-sql-for-custom-methods-LinqExtensionMethods/#disqus_thread">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>If we have a domain like Item below,</p>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='csharp'><span class='line'>    <span class="k">public</span> <span class="k">class</span> <span class="nc">Item</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>        <span class="k">public</span> <span class="k">virtual</span> <span class="kt">int</span> <span class="n">Id</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
+</span><span class='line'>        <span class="k">public</span> <span class="k">virtual</span> <span class="kt">string</span> <span class="n">Source</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
+</span><span class='line'>        <span class="k">public</span> <span class="k">virtual</span> <span class="kt">string</span> <span class="n">Dest</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
+</span><span class='line'>        <span class="k">public</span> <span class="k">virtual</span> <span class="kt">bool</span> <span class="n">IsExport</span> <span class="p">{</span> <span class="k">get</span> <span class="p">{</span> <span class="k">return</span> <span class="n">Source</span> <span class="p">!=</span> <span class="n">Dest</span><span class="p">;</span> <span class="p">}</span> <span class="p">}</span>
+</span><span class='line'>    <span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>it would be good if we can write a linq query like <code>session.Query&lt;Item&gt;().Where(i =&gt; i.IsExport).ToList()</code>,
+however we cant as linq to sql doesnt know how to generate sql for IsExport.</p>
+
+<p>To help linq generate sql for our custom properties we can write our own ILinqToHqlGeneratorsRegistry, something like the one below, which is a generic one and works not just for one property but more.</p>
+
+<p>The idea is to expose the the logic in property as expression which can be used to generate sql.</p>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+</pre></td><td class='code'><pre><code class='csharp'><span class='line'>    <span class="k">public</span> <span class="k">class</span> <span class="nc">Item</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>        <span class="k">public</span> <span class="k">static</span> <span class="k">readonly</span> <span class="n">Expression</span><span class="p">&lt;</span><span class="n">Func</span><span class="p">&lt;</span><span class="n">Item</span><span class="p">,</span> <span class="kt">bool</span><span class="p">&gt;&gt;</span> <span class="n">IsExportExpression</span> <span class="p">=</span> <span class="n">o</span> <span class="p">=&gt;</span> <span class="n">o</span><span class="p">.</span><span class="n">Source</span> <span class="p">!=</span> <span class="n">o</span><span class="p">.</span><span class="n">Dest</span><span class="p">;</span>
+</span><span class='line'>        <span class="k">public</span> <span class="k">virtual</span> <span class="kt">int</span> <span class="n">Id</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
+</span><span class='line'>        <span class="k">public</span> <span class="k">virtual</span> <span class="kt">string</span> <span class="n">Source</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
+</span><span class='line'>        <span class="k">public</span> <span class="k">virtual</span> <span class="kt">string</span> <span class="n">Dest</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
+</span><span class='line'>        <span class="k">public</span> <span class="k">virtual</span> <span class="kt">bool</span> <span class="n">IsExport</span> <span class="p">{</span> <span class="k">get</span> <span class="p">{</span> <span class="k">return</span> <span class="k">this</span><span class="p">.</span><span class="n">FromExpression</span><span class="p">(</span><span class="n">IsExportExpression</span><span class="p">);</span> <span class="p">}</span> <span class="p">}</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">public</span> <span class="k">static</span> <span class="k">class</span> <span class="nc">ExpressionExtensions</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>        <span class="k">public</span> <span class="k">static</span> <span class="n">TReturn</span> <span class="n">FromExpression</span><span class="p">&lt;</span><span class="n">T</span><span class="p">,</span> <span class="n">TReturn</span><span class="p">&gt;(</span><span class="k">this</span> <span class="n">T</span> <span class="n">o</span><span class="p">,</span> <span class="n">Expression</span><span class="p">&lt;</span><span class="n">Func</span><span class="p">&lt;</span><span class="n">T</span><span class="p">,</span> <span class="n">TReturn</span><span class="p">&gt;&gt;</span> <span class="n">selector</span><span class="p">)</span>
+</span><span class='line'>        <span class="p">{</span>
+</span><span class='line'>            <span class="k">return</span> <span class="n">selector</span> <span class="p">==</span> <span class="k">null</span> <span class="p">?</span> <span class="k">default</span><span class="p">(</span><span class="n">TReturn</span><span class="p">)</span> <span class="p">:</span> <span class="n">selector</span><span class="p">.</span><span class="n">Compile</span><span class="p">()(</span><span class="n">o</span><span class="p">);</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">public</span> <span class="k">class</span> <span class="nc">LinqToHqlGenerationRegistry</span> <span class="p">:</span> <span class="n">DefaultLinqToHqlGeneratorsRegistry</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>        <span class="k">public</span> <span class="nf">LinqToHqlGenerationRegistry</span><span class="p">():</span><span class="k">base</span><span class="p">()</span>
+</span><span class='line'>        <span class="p">{</span>
+</span><span class='line'>            <span class="n">RegisterGenerator</span><span class="p">(</span><span class="n">ReflectionHelper</span><span class="p">.</span><span class="n">GetMethodDefinition</span><span class="p">(()=&gt;</span><span class="n">ExpressionExtensions</span><span class="p">.</span><span class="n">FromExpression</span><span class="p">&lt;</span><span class="kt">object</span><span class="p">,</span><span class="kt">object</span><span class="p">&gt;(</span><span class="k">null</span><span class="p">,</span><span class="k">null</span><span class="p">)),</span> <span class="k">new</span> <span class="n">HqlFromExpressionGenerator</span><span class="p">());</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">class</span> <span class="nc">HqlFromExpressionGenerator</span> <span class="p">:</span> <span class="n">BaseHqlGeneratorForMethod</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>        <span class="k">public</span> <span class="nf">HqlFromExpressionGenerator</span><span class="p">()</span>
+</span><span class='line'>        <span class="p">{</span>
+</span><span class='line'>            <span class="n">SupportedMethods</span> <span class="p">=</span> <span class="k">new</span><span class="p">[]</span>
+</span><span class='line'>                <span class="p">{</span>
+</span><span class='line'>                    <span class="n">ReflectionHelper</span><span class="p">.</span><span class="n">GetMethodDefinition</span><span class="p">((()</span> <span class="p">=&gt;</span> <span class="n">ExpressionProjectionExtensions</span><span class="p">.</span><span class="n">FromExpression</span><span class="p">&lt;</span><span class="kt">object</span><span class="p">,</span> <span class="kt">object</span><span class="p">&gt;(</span><span class="k">null</span><span class="p">,</span> <span class="k">null</span><span class="p">)))</span>
+</span><span class='line'>                <span class="p">};</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="k">public</span> <span class="k">override</span> <span class="n">HqlTreeNode</span> <span class="nf">BuildHql</span><span class="p">(</span><span class="n">MethodInfo</span> <span class="n">method</span><span class="p">,</span> <span class="n">Expression</span> <span class="n">targetObject</span><span class="p">,</span> <span class="n">ReadOnlyCollection</span><span class="p">&lt;</span><span class="n">Expression</span><span class="p">&gt;</span> <span class="n">arguments</span><span class="p">,</span>
+</span><span class='line'>                                             <span class="n">HqlTreeBuilder</span> <span class="n">treeBuilder</span><span class="p">,</span> <span class="n">IHqlExpressionVisitor</span> <span class="n">visitor</span><span class="p">)</span>
+</span><span class='line'>        <span class="p">{</span>
+</span><span class='line'>            <span class="kt">var</span> <span class="n">expression</span> <span class="p">=</span> <span class="n">arguments</span><span class="p">[</span><span class="m">1</span><span class="p">]</span> <span class="k">as</span> <span class="n">UnaryExpression</span><span class="p">;</span>
+</span><span class='line'>            <span class="kt">dynamic</span> <span class="n">operand</span> <span class="p">=</span> <span class="n">expression</span><span class="p">.</span><span class="n">Operand</span><span class="p">;</span>
+</span><span class='line'>            <span class="kt">var</span> <span class="n">replace</span> <span class="p">=</span> <span class="n">ReplacingExpressionTreeVisitor</span><span class="p">.</span><span class="n">Replace</span><span class="p">(</span><span class="n">operand</span><span class="p">.</span><span class="n">Parameters</span><span class="p">[</span><span class="m">0</span><span class="p">],</span> <span class="n">arguments</span><span class="p">[</span><span class="m">0</span><span class="p">],</span> <span class="n">operand</span><span class="p">.</span><span class="n">Body</span><span class="p">);</span>
+</span><span class='line'>            <span class="k">return</span> <span class="n">visitor</span><span class="p">.</span><span class="n">Visit</span><span class="p">(</span><span class="n">replace</span><span class="p">);</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>    <span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>we have to add <code>LinqToHqlGenerationRegistry</code> to NHibernate using</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>Fluently
+</span><span class='line'>.Configure(yourConfig)
+</span><span class='line'>.ExposeConfiguration(config=&gt;config.LinqToHqlGeneratorsRegistry&lt;LinqToHqlGenerationRegistry&gt;());</span></code></pre></td></tr></table></div></figure>
+
+
+<p>now when we want to query Item we can do</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>session.Query&lt;Item&gt;().Where(i =&gt; i.FromExpression(Item.IsExportExpression)).ToList()</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Properties can now share expessions between them.</p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -344,6 +507,10 @@
     <section>
   <h1>Recent Posts</h1>
   <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2013/05/31/linq-to-sql-for-custom-methods-LinqExtensionMethods/">Linq To Sql for Custom Methods/Properties - LinqExtensionMethods</a>
+      </li>
     
       <li class="post">
         <a href="/blog/2013/05/22/css-at-the-end-of-page-delays-page-rendering/">css at the end of page delays page rendering</a>
