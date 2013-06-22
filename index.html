@@ -9,13 +9,7 @@
   <meta name="author" content="Ragavan Govindarajan">
 
   
-  <meta name="description" content="If we have a domain like Item below, 1
-2
-3
-4
-5
-6
-7 public class Item { public virtual int Id { get; set; } public virtual string Source { get; set &hellip;">
+  <meta name="description" content="NBuilder is fluent objects builder, generates values for properties/fields in the object automatically. This also to persist the created object using &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -70,6 +64,101 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2013/06/21/nbuilder-disable-property-naming-for-all-fields-with-given-name/">Nbuilder Disable Property Naming for All Fields With Given Name</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-06-21T20:39:00+05:30" pubdate data-updated="true">Jun 21<span>st</span>, 2013</time>
+        
+         | <a href="/blog/2013/06/21/nbuilder-disable-property-naming-for-all-fields-with-given-name/#disqus_thread">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p><a href="http://nbuilder.org/" title="NBuilder">NBuilder</a> is fluent objects builder, generates values for properties/fields in the object automatically. This also to persist the created object using the <code>.Persist()</code>.
+Citing the example from <a href="http://nbuilder.org/Documentation/Persistence">NBuilder Persistence</a></p>
+
+<figure class='code'><figcaption><span>Persistence  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='csharp'><span class='line'>   <span class="c1">// in config section</span>
+</span><span class='line'>  <span class="n">BuilderSetup</span><span class="p">.</span><span class="n">SetCreatePersistenceMethod</span><span class="p">&lt;</span><span class="n">Product</span><span class="p">&gt;(</span><span class="n">productRepository</span><span class="p">.</span><span class="n">Create</span><span class="p">);</span>
+</span><span class='line'>  <span class="c1">// in test code</span>
+</span><span class='line'>  <span class="n">Builder</span><span class="p">&lt;</span><span class="n">Product</span><span class="p">&gt;.</span><span class="n">CreateNew</span><span class="p">().</span><span class="n">Persist</span><span class="p">();</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>If NHibernate is being used for persistence and identity insert is off, the NBuilder needs to be told to not generate values for <code>Id</code>. This can be done like <code>BuilderSetup.DisablePropertyNamingFor&lt;Product, int&gt;(x =&gt; x.Id);</code></p>
+
+<p>However this needs to be done for all the domain classes, and its not straight forward as current way of disabling property naming is only through generic method.</p>
+
+<p>To disable property naming for a property of given name, the following snippet can be used</p>
+
+<figure class='code'><figcaption><span>Disable naming for all fields with given name  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+</pre></td><td class='code'><pre><code class='csharp'><span class='line'>   <span class="k">typeof</span><span class="p">(</span><span class="n">Product</span><span class="p">).</span><span class="n">Assembly</span><span class="p">.</span><span class="n">GetTypes</span><span class="p">().</span><span class="n">Where</span><span class="p">(</span><span class="n">HasId</span><span class="p">).</span><span class="n">ForEach</span><span class="p">(</span><span class="n">t</span> <span class="p">=&gt;</span>
+</span><span class='line'>                <span class="p">{</span>
+</span><span class='line'>                    <span class="kt">var</span> <span class="n">methodInfo</span> <span class="p">=</span> <span class="k">typeof</span><span class="p">(</span><span class="n">BuilderSetup</span><span class="p">).</span><span class="n">GetMethod</span><span class="p">(</span><span class="s">&quot;DisablePropertyNamingFor&quot;</span><span class="p">);</span>
+</span><span class='line'>                    <span class="kt">var</span> <span class="n">idType</span> <span class="p">=</span> <span class="n">t</span><span class="p">.</span><span class="n">GetProperty</span><span class="p">(</span><span class="s">&quot;Id&quot;</span><span class="p">).</span><span class="n">PropertyType</span><span class="p">;</span>
+</span><span class='line'>                    <span class="kt">var</span> <span class="n">disablePropertyNaming</span> <span class="p">=</span> <span class="n">methodInfo</span><span class="p">.</span><span class="n">MakeGenericMethod</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">idType</span><span class="p">);</span>
+</span><span class='line'>                    <span class="kt">var</span> <span class="n">parameterExpression</span> <span class="p">=</span> <span class="n">Expression</span><span class="p">.</span><span class="n">Parameter</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="s">&quot;t&quot;</span><span class="p">);</span>
+</span><span class='line'>                    <span class="kt">var</span> <span class="n">makeMemberAccess</span> <span class="p">=</span> <span class="n">Expression</span><span class="p">.</span><span class="n">MakeMemberAccess</span><span class="p">(</span><span class="n">parameterExpression</span><span class="p">,</span> <span class="n">t</span><span class="p">.</span><span class="n">GetProperty</span><span class="p">(</span><span class="s">&quot;Id&quot;</span><span class="p">));</span>
+</span><span class='line'>                    <span class="kt">var</span> <span class="n">memberAccessExpression</span> <span class="p">=</span> <span class="n">Expression</span><span class="p">.</span><span class="n">Lambda</span><span class="p">(</span><span class="n">makeMemberAccess</span><span class="p">,</span> <span class="n">parameterExpression</span><span class="p">);</span>
+</span><span class='line'>                    <span class="n">disablePropertyNaming</span><span class="p">.</span><span class="n">Invoke</span><span class="p">(</span><span class="k">null</span><span class="p">,</span> <span class="k">new</span> <span class="kt">object</span><span class="p">[]</span> <span class="p">{</span> <span class="n">memberAccessExpression</span> <span class="p">});</span>
+</span><span class='line'>                <span class="p">})</span>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">private</span> <span class="k">static</span> <span class="kt">bool</span> <span class="nf">HasId</span><span class="p">(</span><span class="n">Type</span> <span class="n">t</span><span class="p">)</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>        <span class="k">return</span> <span class="n">t</span><span class="p">.</span><span class="n">Namespace</span> <span class="p">!=</span> <span class="k">null</span> <span class="p">&amp;&amp;</span> <span class="n">t</span><span class="p">.</span><span class="n">Namespace</span><span class="p">.</span><span class="n">Contains</span><span class="p">(</span><span class="s">&quot;Model&quot;</span><span class="p">)</span> <span class="p">&amp;&amp;</span> <span class="n">t</span><span class="p">.</span><span class="n">GetProperty</span><span class="p">(</span><span class="s">&quot;Id&quot;</span><span class="p">)</span> <span class="p">!=</span> <span class="k">null</span><span class="p">;</span>
+</span><span class='line'>    <span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>This snippet invokes <code>BuilderSetup.DisablePropertyNamingFor</code> with <code>x=&gt;x.Id</code> being passed in as a lambda expression doing MemberAccess for all classes in the assembly which has an Id.</p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -507,6 +596,10 @@ however we cant as linq to sql doesnt know how to generate sql for IsExport.</p>
     <section>
   <h1>Recent Posts</h1>
   <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2013/06/21/nbuilder-disable-property-naming-for-all-fields-with-given-name/">Nbuilder disable property naming for all fields with given Name</a>
+      </li>
     
       <li class="post">
         <a href="/blog/2013/05/31/linq-to-sql-for-custom-methods-LinqExtensionMethods/">Linq To Sql for Custom Methods/Properties - LinqExtensionMethods</a>

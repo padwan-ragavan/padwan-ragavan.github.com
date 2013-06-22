@@ -1,0 +1,313 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Nbuilder disable property naming for all fields with given Name - gitblog</title>
+  <meta name="author" content="Ragavan Govindarajan">
+
+  
+  <meta name="description" content="NBuilder is fluent objects builder, generates values for properties/fields in the object automatically. This also to persist the created object using &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://padwan-ragavan.github.com/blog/2013/06/21/nbuilder-disable-property-naming-for-all-fields-with-given-name/">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="/javascripts/ender.js"></script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <link href="/atom.xml" rel="alternate" title="gitblog" type="application/atom+xml">
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">gitblog</a></h1>
+  
+    <h2>daily logs in git</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:padwan-ragavan.github.com" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Nbuilder Disable Property Naming for All Fields With Given Name</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-06-21T20:39:00+05:30" pubdate data-updated="true">Jun 21<span>st</span>, 2013</time>
+        
+         | <a href="#disqus_thread">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p><a href="http://nbuilder.org/" title="NBuilder">NBuilder</a> is fluent objects builder, generates values for properties/fields in the object automatically. This also to persist the created object using the <code>.Persist()</code>.
+Citing the example from <a href="http://nbuilder.org/Documentation/Persistence">NBuilder Persistence</a></p>
+
+<figure class='code'><figcaption><span>Persistence  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='csharp'><span class='line'>   <span class="c1">// in config section</span>
+</span><span class='line'>  <span class="n">BuilderSetup</span><span class="p">.</span><span class="n">SetCreatePersistenceMethod</span><span class="p">&lt;</span><span class="n">Product</span><span class="p">&gt;(</span><span class="n">productRepository</span><span class="p">.</span><span class="n">Create</span><span class="p">);</span>
+</span><span class='line'>  <span class="c1">// in test code</span>
+</span><span class='line'>  <span class="n">Builder</span><span class="p">&lt;</span><span class="n">Product</span><span class="p">&gt;.</span><span class="n">CreateNew</span><span class="p">().</span><span class="n">Persist</span><span class="p">();</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>If NHibernate is being used for persistence and identity insert is off, the NBuilder needs to be told to not generate values for <code>Id</code>. This can be done like <code>BuilderSetup.DisablePropertyNamingFor&lt;Product, int&gt;(x =&gt; x.Id);</code></p>
+
+<p>However this needs to be done for all the domain classes, and its not straight forward as current way of disabling property naming is only through generic method.</p>
+
+<p>To disable property naming for a property of given name, the following snippet can be used</p>
+
+<figure class='code'><figcaption><span>Disable naming for all fields with given name  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+</pre></td><td class='code'><pre><code class='csharp'><span class='line'>   <span class="k">typeof</span><span class="p">(</span><span class="n">Product</span><span class="p">).</span><span class="n">Assembly</span><span class="p">.</span><span class="n">GetTypes</span><span class="p">().</span><span class="n">Where</span><span class="p">(</span><span class="n">HasId</span><span class="p">).</span><span class="n">ForEach</span><span class="p">(</span><span class="n">t</span> <span class="p">=&gt;</span>
+</span><span class='line'>                <span class="p">{</span>
+</span><span class='line'>                    <span class="kt">var</span> <span class="n">methodInfo</span> <span class="p">=</span> <span class="k">typeof</span><span class="p">(</span><span class="n">BuilderSetup</span><span class="p">).</span><span class="n">GetMethod</span><span class="p">(</span><span class="s">&quot;DisablePropertyNamingFor&quot;</span><span class="p">);</span>
+</span><span class='line'>                    <span class="kt">var</span> <span class="n">idType</span> <span class="p">=</span> <span class="n">t</span><span class="p">.</span><span class="n">GetProperty</span><span class="p">(</span><span class="s">&quot;Id&quot;</span><span class="p">).</span><span class="n">PropertyType</span><span class="p">;</span>
+</span><span class='line'>                    <span class="kt">var</span> <span class="n">disablePropertyNaming</span> <span class="p">=</span> <span class="n">methodInfo</span><span class="p">.</span><span class="n">MakeGenericMethod</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">idType</span><span class="p">);</span>
+</span><span class='line'>                    <span class="kt">var</span> <span class="n">parameterExpression</span> <span class="p">=</span> <span class="n">Expression</span><span class="p">.</span><span class="n">Parameter</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="s">&quot;t&quot;</span><span class="p">);</span>
+</span><span class='line'>                    <span class="kt">var</span> <span class="n">makeMemberAccess</span> <span class="p">=</span> <span class="n">Expression</span><span class="p">.</span><span class="n">MakeMemberAccess</span><span class="p">(</span><span class="n">parameterExpression</span><span class="p">,</span> <span class="n">t</span><span class="p">.</span><span class="n">GetProperty</span><span class="p">(</span><span class="s">&quot;Id&quot;</span><span class="p">));</span>
+</span><span class='line'>                    <span class="kt">var</span> <span class="n">memberAccessExpression</span> <span class="p">=</span> <span class="n">Expression</span><span class="p">.</span><span class="n">Lambda</span><span class="p">(</span><span class="n">makeMemberAccess</span><span class="p">,</span> <span class="n">parameterExpression</span><span class="p">);</span>
+</span><span class='line'>                    <span class="n">disablePropertyNaming</span><span class="p">.</span><span class="n">Invoke</span><span class="p">(</span><span class="k">null</span><span class="p">,</span> <span class="k">new</span> <span class="kt">object</span><span class="p">[]</span> <span class="p">{</span> <span class="n">memberAccessExpression</span> <span class="p">});</span>
+</span><span class='line'>                <span class="p">})</span>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">private</span> <span class="k">static</span> <span class="kt">bool</span> <span class="nf">HasId</span><span class="p">(</span><span class="n">Type</span> <span class="n">t</span><span class="p">)</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>        <span class="k">return</span> <span class="n">t</span><span class="p">.</span><span class="n">Namespace</span> <span class="p">!=</span> <span class="k">null</span> <span class="p">&amp;&amp;</span> <span class="n">t</span><span class="p">.</span><span class="n">Namespace</span><span class="p">.</span><span class="n">Contains</span><span class="p">(</span><span class="s">&quot;Model&quot;</span><span class="p">)</span> <span class="p">&amp;&amp;</span> <span class="n">t</span><span class="p">.</span><span class="n">GetProperty</span><span class="p">(</span><span class="s">&quot;Id&quot;</span><span class="p">)</span> <span class="p">!=</span> <span class="k">null</span><span class="p">;</span>
+</span><span class='line'>    <span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>This snippet invokes <code>BuilderSetup.DisablePropertyNamingFor</code> with <code>x=&gt;x.Id</code> being passed in as a lambda expression doing MemberAccess for all classes in the assembly which has an Id.</p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Ragavan Govindarajan</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-06-21T20:39:00+05:30" pubdate data-updated="true">Jun 21<span>st</span>, 2013</time>
+      
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://padwan-ragavan.github.com/blog/2013/06/21/nbuilder-disable-property-naming-for-all-fields-with-given-name/" data-via="" data-counturl="http://padwan-ragavan.github.com/blog/2013/06/21/nbuilder-disable-property-naming-for-all-fields-with-given-name/" >Tweet</a>
+  
+  
+  <div class="g-plusone" data-size="medium"></div>
+  
+  
+    <div class="fb-like" data-send="true" data-width="450" data-show-faces="false"></div>
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2013/05/31/linq-to-sql-for-custom-methods-LinqExtensionMethods/" title="Previous Post: Linq To Sql for Custom Methods/Properties - LinqExtensionMethods">&laquo; Linq To Sql for Custom Methods/Properties - LinqExtensionMethods</a>
+      
+      
+    </p>
+  </footer>
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2013/06/21/nbuilder-disable-property-naming-for-all-fields-with-given-name/">Nbuilder disable property naming for all fields with given Name</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/05/31/linq-to-sql-for-custom-methods-LinqExtensionMethods/">Linq To Sql for Custom Methods/Properties - LinqExtensionMethods</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/05/22/css-at-the-end-of-page-delays-page-rendering/">css at the end of page delays page rendering</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/12/26/fix-for-rake-generate-fail-with-block-in-ffi-lib-could-not-open-library-dll/">fix for rake generate with sytax highlight code block - fail with block in ffi_lib: Could not open library .dll</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/12/25/filepicker-mozilla-addon/">filepicker for mozilla addon</a>
+      </li>
+    
+  </ul>
+</section>
+
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2013 - Ragavan Govindarajan -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'gitblogdailyblogsingit';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://padwan-ragavan.github.com/blog/2013/06/21/nbuilder-disable-property-naming-for-all-fields-with-given-name/';
+        var disqus_url = 'http://padwan-ragavan.github.com/blog/2013/06/21/nbuilder-disable-property-naming-for-all-fields-with-given-name/';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+<div id="fb-root"></div>
+<script>(function(d, s, id) {
+  var js, fjs = d.getElementsByTagName(s)[0];
+  if (d.getElementById(id)) {return;}
+  js = d.createElement(s); js.id = id;
+  js.src = "//connect.facebook.net/en_US/all.js#appId=212934732101925&xfbml=1";
+  fjs.parentNode.insertBefore(js, fjs);
+}(document, 'script', 'facebook-jssdk'));</script>
+
+
+
+  <script type="text/javascript">
+    (function() {
+      var script = document.createElement('script'); script.type = 'text/javascript'; script.async = true;
+      script.src = 'https://apis.google.com/js/plusone.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(script, s);
+    })();
+  </script>
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>
