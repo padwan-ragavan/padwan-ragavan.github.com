@@ -465,9 +465,9 @@ however we cant as linq to sql doesnt know how to generate sql for IsExport.</p>
 
 <blockquote></blockquote>
 
-<p>for me it was because the rubypython was looking for python27.dll in <code>{instal.dir}\Python27\libs\python27.dll</code> and it was not there. This can be fixed by copying the <code>python27.dll</code> from <code>C:\Windows\System32\python27.dll</code> if yours is a 32-bit or from <code>C:\Windows\SysWOW64\python27.dll</code> if 64-bit.</p>
+<p>for me it was because the rubypython was looking for python27.dll in <code>{instal.dir}\Python27\libs\python27.dll</code> and it was not there. This can be fixed by copying the <code>python27.dll</code> from <code>{win.directory}:\Windows\System32\python27.dll</code> if yours is a 32-bit or from <code>{win.directory}:\Windows\SysWOW64\python27.dll</code> if 64-bit <code>{instal.dir}\Python27\libs\</code>.</p>
 
-<p>got to know about the missing dll from <a href="http://hussion.me/blog/2012/04/29/octopress2/">Hussion&#8217;s Blog</a>, but mine was 64-bit and ofcourse copying from system32 didnt solve the issue.</p>
+<p>got to know about the missing dll from <a href="http://hussion.me/blog/2012/04/29/octopress2/">Hussion&#8217;s Blog</a>.</p>
 </div>
   
   
