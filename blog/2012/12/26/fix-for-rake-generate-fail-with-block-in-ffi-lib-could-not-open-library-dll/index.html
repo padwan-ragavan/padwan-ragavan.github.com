@@ -99,7 +99,7 @@ block in ffi_lib: Could not open library .dll for me it was because the rubypyth
 </pre></td><td class='code'><pre><code class=''><span class='line'>block in ffi_lib: Could not open library .dll</span></code></pre></td></tr></table></div></figure>
 
 
-<blockquote></blockquote>
+<p></p>
 
 <p>for me it was because the rubypython was looking for python27.dll in <code>{instal.dir}\Python27\libs\python27.dll</code> and it was not there. This can be fixed by copying the <code>python27.dll</code> from <code>{win.directory}:\Windows\System32\python27.dll</code> if yours is a 32-bit or from <code>{win.directory}:\Windows\SysWOW64\python27.dll</code> if 64-bit <code>{instal.dir}\Python27\libs\</code>.</p>
 
